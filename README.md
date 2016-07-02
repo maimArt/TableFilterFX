@@ -33,7 +33,7 @@ tableFilter.filterColumn(columnB);
 If you want to bind the table data use the TableFilter.unfilteredItemsProperty() instead.**
 
 ## TODOs
-This is a early version of the filter. If you find any bugs please feel free to create an issue. I´m glad for any bug and missing feature report.
+This is a early version of the filter. If you find any bugs please feel free to create an issue. I´m glad to every reported bug.
 
 - Deployment on center maven repository will come soon
 - Intensive testing of the filter will happen in nearest future
