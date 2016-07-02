@@ -1,9 +1,9 @@
 # TableFilterFX
 An extension of JavaFX TableViews for filtering columns
 
-![Travis Build Status](https://travis-ci.org/maimArt/TableFilterFX.svg?branch=master)
+[![Travis Build Status](https://travis-ci.org/maimArt/TableFilterFX.svg?branch=master)](https://travis-ci.org/maimArt/TableFilterFX)
 
-[![screenshot1](https://cloud.githubusercontent.com/assets/20232625/16540990/0c2d9c2a-4078-11e6-87cc-98b96d7f017c.png)](https://travis-ci.org/maimArt/TableFilterFX)
+![screenshot1](https://cloud.githubusercontent.com/assets/20232625/16540990/0c2d9c2a-4078-11e6-87cc-98b96d7f017c.png)
 
 ## Implementation
 
