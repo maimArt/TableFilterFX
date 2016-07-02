@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox fx:id="rootContent" minHeight="19.0" styleClass="popup_container" stylesheets="css/filteredtable.css" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <CheckBox fx:id="chkBox_selectAll" focusTraversable="false" mnemonicParsing="false" text="CheckBox">
+         <VBox.margin>
+            <Insets left="7.0" />
+         </VBox.margin></CheckBox>
+      <ListView fx:id="listView" fixedCellSize="24.0" focusTraversable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="popup_listView" VBox.vgrow="ALWAYS" />
+   </children>
+</VBox>
