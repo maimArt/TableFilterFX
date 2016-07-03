@@ -38,5 +38,4 @@ This is a early version of the filter. If you find any bugs please feel free to 
 - Deployment on center maven repository will come soon
 - Improve performance on big lists (10k+)
 - Intensive testing of the filter will happen in nearest future
-- Refiltering after cell edit
 
