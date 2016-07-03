@@ -57,11 +57,8 @@ public class FilterPopUp<T> extends PopupControl {
 		listView.itemsProperty().bind(allItems);
 		addSelectionProperties(allItems);
 		allItems.addListener((ListChangeListener<T>) c -> {
-			while(c.next())
-			{
-				addSelectionProperties(c.getAddedSubList());
-				removeSelectionProperty(c.getRemoved());
-			}			
+			mapItemToSelectedProperty.clear();
+			addSelectionProperties(c.getList());
 		});
 		initSelectAllCheckbox();
 	}

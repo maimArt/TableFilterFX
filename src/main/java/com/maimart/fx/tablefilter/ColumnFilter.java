@@ -13,8 +13,10 @@ import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ListChangeListener.Change;
+import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.input.MouseEvent;
 
 /**
@@ -41,6 +43,12 @@ public class ColumnFilter<S, T extends Comparable<T>> {
 		super();
 		this.tableFilter = tablefilter;
 		this.column = columnToFilter;
+		EventHandler<CellEditEvent<S, T>> editCommitHandler = this.column.getOnEditCommit();
+		this.column.setOnEditCommit(event -> {
+			editCommitHandler.handle(event);
+			updateItems();			
+		});
+
 		// set custom header
 		header = new FilteredColumnHeader(column);
 		header.prefWidthProperty().bind(column.widthProperty());
@@ -66,12 +74,15 @@ public class ColumnFilter<S, T extends Comparable<T>> {
 
 		filterPopup.getRootContent().maxWidthProperty().bind(column.widthProperty());
 		filterPopup.getRootContent().prefWidthProperty().bind(column.widthProperty());
+		updateItems();
+		tableFilter.unfilteredItemsProperty().addListener((ListChangeListener<S>) changeevent -> {
+			updateItems();
+		});
+	}
+
+	private void updateItems() {
 		mapIndexesToItems();
 		updateMergedCellValues();
-		tableFilter.unfilteredItemsProperty().addListener((ListChangeListener<S>) changeevent -> {
-			mapIndexesToItems();
-			updateMergedCellValues();
-		});
 	}
 
 	/**
@@ -111,10 +122,13 @@ public class ColumnFilter<S, T extends Comparable<T>> {
 		for (T value : mapItemToRowIndexes.keySet()) {
 			boolean alreadyExists = false;
 			for (T existingValue : mergedValues) {
-				if (existingValue.compareTo(value) == 0) {
+				if (existingValue == null && value == null) {
+					alreadyExists = true;
+				} else if (existingValue != null && existingValue.compareTo(value) == 0) {
 					alreadyExists = true;
 					break;
 				}
+
 			}
 			if (!alreadyExists) {
 				mergedValues.add(value);
@@ -128,6 +142,7 @@ public class ColumnFilter<S, T extends Comparable<T>> {
 	 * map indexs of the items to the items
 	 */
 	private void mapIndexesToItems() {
+		mapItemToRowIndexes.clear();
 		for (int i = 0; i < tableFilter.getUnfilteredItems().size(); i++) {
 			T item = column.getCellData(i);
 			List<Integer> indexes = mapItemToRowIndexes.get(item);

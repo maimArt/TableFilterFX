@@ -99,7 +99,7 @@ public class TableFilter<S> {
 		applyFilter();
 	}
 
-	private void applyFilter() {		
+	void applyFilter() {		
 		List<S> nextItems = new ArrayList<>();
 		for (int i = 0; i < unfilteredItems.size(); i++) {
 			if (mapRowIndexToBlacklistingColumn.get(i) == null) {
