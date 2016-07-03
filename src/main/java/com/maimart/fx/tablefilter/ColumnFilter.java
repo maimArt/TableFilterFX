@@ -80,14 +80,18 @@ public class ColumnFilter<S, T extends Comparable<T>> {
 	 * @param changeEvent
 	 */
 	private void onBlacklistedItemsChanged(Change<? extends T> changeEvent) {
+		List<Integer> addedIndexes = new ArrayList<>();
+		List<Integer> removedIndexes = new ArrayList<>();
 		while (changeEvent.next()) {
 			for (T addedItem : changeEvent.getAddedSubList()) {
-				blacklistedRowIndexes.addAll(mapItemToRowIndexes.get(addedItem));
+				addedIndexes.addAll(mapItemToRowIndexes.get(addedItem));
 			}
 			for (T removedItem : changeEvent.getRemoved()) {
-				blacklistedRowIndexes.removeAll(mapItemToRowIndexes.get(removedItem));
+				removedIndexes.addAll(mapItemToRowIndexes.get(removedItem));
 			}
 		}
+		blacklistedRowIndexes.addAll(addedIndexes);
+		blacklistedRowIndexes.removeAll(removedIndexes);
 	}
 
 	private void onFilterButtonClicked(MouseEvent event) {

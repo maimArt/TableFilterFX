@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleListProperty;
@@ -25,10 +26,12 @@ import javafx.scene.control.TableView;
  * @param <S>
  */
 public class TableFilter<S> {
+	
+	private final static Logger LOGGER = Logger.getLogger(TableFilter.class.getName());
 
 	private final TableView<S> tableView;
 	private final Map<Integer, List<ColumnFilter<S, ?>>> mapRowIndexToBlacklistingColumn = new HashMap<>();
-	private final ListProperty<S> unfilteredItems = new SimpleListProperty<S>(FXCollections.observableArrayList());
+	private final ListProperty<S> unfilteredItems = new SimpleListProperty<S>(FXCollections.observableArrayList());	
 
 	/**
 	 * Constructor that takes items of tableview for initialization
@@ -93,16 +96,17 @@ public class TableFilter<S> {
 				}
 			}
 		}
+		applyFilter();
 	}
 
-	private void applyFilter() {
-		List<S> nextList = new ArrayList<>();
+	private void applyFilter() {		
+		List<S> nextItems = new ArrayList<>();
 		for (int i = 0; i < unfilteredItems.size(); i++) {
 			if (mapRowIndexToBlacklistingColumn.get(i) == null) {
-				nextList.add(unfilteredItems.get(i));
+				nextItems.add(unfilteredItems.get(i));
 			}
 		}
-		tableView.getItems().setAll(nextList);
+		tableView.getItems().setAll(nextItems);
 	}
 
 	public final ListProperty<S> unfilteredItemsProperty() {

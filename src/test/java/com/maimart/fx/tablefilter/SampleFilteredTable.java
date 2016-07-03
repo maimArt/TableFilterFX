@@ -3,8 +3,6 @@ package com.maimart.fx.tablefilter;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.maimart.fx.tablefilter.TableFilter;
-
 import javafx.application.Application;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.Scene;
@@ -51,9 +49,13 @@ public class SampleFilteredTable extends Application {
 
 	private List<Pojo> buildPojoList() {
 		List<Pojo> pojoList = new ArrayList<>();
-		for (int i = 0; i < 10; i++) {
-			pojoList.add(new Pojo("A" + i, "B0"));
+		for(int j = 0; j < 100; j++)
+		{
+			for (int i = 0; i < 20; i++) {
+				pojoList.add(new Pojo("A" + i, "B0"));
+			}
 		}
+		
 		return pojoList;
 	}
 
