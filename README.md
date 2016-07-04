@@ -1,5 +1,5 @@
 # TableFilterFX
-An extension of JavaFX TableViews for filtering columns
+An extension for the JavaFX TableView that adds the possibility of applying a filter to the column headers
 
 [![Travis Build Status](https://travis-ci.org/maimArt/TableFilterFX.svg?branch=master)](https://travis-ci.org/maimArt/TableFilterFX)
 
