@@ -10,6 +10,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -18,6 +19,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.PopupControl;
 import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.scene.layout.VBox;
+import javafx.util.Callback;
 
 /**
  * Popup to select filters
@@ -37,7 +39,7 @@ public class FilterPopUp<T> extends PopupControl {
 	@FXML
 	private ListView<T> listView;
 
-	private final Map<T, BooleanProperty> mapItemToSelectedProperty = new HashMap<>();
+	private final Map<T, SimpleBooleanProperty> mapItemToSelectedProperty = new HashMap<>();
 
 	private final ListProperty<T> blacklistItems;
 
@@ -55,6 +57,7 @@ public class FilterPopUp<T> extends PopupControl {
 
 		this.blacklistItems = blacklist;
 		listView.itemsProperty().bind(allItems);
+		listView.setPrefWidth(0);
 		addSelectionProperties(allItems);
 		allItems.addListener((ListChangeListener<T>) c -> {
 			mapItemToSelectedProperty.clear();
@@ -68,11 +71,9 @@ public class FilterPopUp<T> extends PopupControl {
 		getScene().setRoot(rootContent);
 		defineListView();
 	}
-	
-	private void addSelectionProperties(List<? extends T> items)
-	{
-		for(T item : items)
-		{
+
+	private void addSelectionProperties(List<? extends T> items) {
+		for (T item : items) {
 			SimpleBooleanProperty property = new SimpleBooleanProperty(true);
 			mapItemToSelectedProperty.put(item, property);
 			property.addListener((ChangeListener<Boolean>) (observable, oldValue, newValue) -> {
@@ -85,16 +86,14 @@ public class FilterPopUp<T> extends PopupControl {
 					chkBox_selectAll.setSelected(blacklistItems.size() == 0);
 				}
 			});
-		}		
+		}
 	}
-	
-	private void removeSelectionProperty(List<? extends T> items)
-	{
-		for(T item : items)
-		{
+
+	private void removeSelectionProperty(List<? extends T> items) {
+		for (T item : items) {
 			// TODO remove listener before removing from map
 			mapItemToSelectedProperty.remove(item);
-		}		
+		}
 	}
 
 	private void initSelectAllCheckbox() {
@@ -113,10 +112,19 @@ public class FilterPopUp<T> extends PopupControl {
 	}
 
 	private void defineListView() {
-		listView.setCellFactory(CheckBoxListCell.forListView(param -> {
-			BooleanProperty property = mapItemToSelectedProperty.get(param);			
-			return property;
-		}));
+		listView.setCellFactory(param -> {
+			Callback<T, ObservableValue<Boolean>> callback = param1 -> {
+				SimpleBooleanProperty property = mapItemToSelectedProperty.get(param1);
+				return property;
+			};
+			CheckBoxListCell<T> checkboxCell = new CheckBoxListCell<>(callback);
+			checkboxCell.widthProperty().addListener((ChangeListener<Number>) (observable, oldValue, newValue) -> {
+				double width = newValue.doubleValue() + listView.getInsets().getLeft()
+						+ listView.getInsets().getRight();
+				listView.setPrefWidth(Math.max(listView.getPrefWidth(), width));
+			});
+			return checkboxCell;
+		});
 	}
 
 	public VBox getRootContent() {

@@ -19,6 +19,7 @@ import javafx.geometry.Bounds;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.stage.PopupWindow.AnchorLocation;
 
 /**
  * Filtered column
@@ -73,9 +74,8 @@ public class ColumnFilter<S, T> {
 	private void initColumnFilter() {
 		filterPopup.getRootContent().maxHeightProperty()
 				.bind(tableFilter.getTableView().heightProperty().multiply(0.5));
-
-		filterPopup.getRootContent().maxWidthProperty().bind(column.widthProperty());
-		filterPopup.getRootContent().prefWidthProperty().bind(column.widthProperty());
+		filterPopup.getRootContent().maxWidthProperty().bind(tableFilter.getTableView().widthProperty());
+		filterPopup.getRootContent().minWidthProperty().bind(column.widthProperty());
 		updateItems();
 		tableFilter.unfilteredItemsProperty().addListener((ListChangeListener<S>) changeevent -> {
 			updateItems();
@@ -111,7 +111,19 @@ public class ColumnFilter<S, T> {
 		if (!filterPopup.isShowing()) {
 			Bounds bounds = header.getBoundsInLocal();
 			Bounds screenBounds = header.localToScreen(bounds);
-			filterPopup.show(header, screenBounds.getMinX(), screenBounds.getMaxY());
+			int lastColIndex = tableFilter.getTableView().getColumns().size() - 1;
+			int thisColIndex = tableFilter.getTableView().getColumns().indexOf(column);
+			double xpos;
+			if (thisColIndex == lastColIndex) {
+				filterPopup.setAnchorLocation(AnchorLocation.CONTENT_TOP_RIGHT);
+				Bounds boundsTable = tableFilter.getTableView().getBoundsInLocal();
+				Bounds screentToTable = tableFilter.getTableView().localToScreen(boundsTable);
+				xpos = screentToTable.getMaxX();
+			} else {
+				filterPopup.setAnchorLocation(AnchorLocation.CONTENT_TOP_LEFT);
+				xpos = screenBounds.getMinX();
+			}
+			filterPopup.show(header, xpos, screenBounds.getMaxY());
 		}
 		event.consume();
 	}
