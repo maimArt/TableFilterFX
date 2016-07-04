@@ -7,8 +7,10 @@ import java.util.Map;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
@@ -45,6 +47,8 @@ public class FilterPopUp<T> extends PopupControl {
 
 	private boolean selectAllIsRunning = false;
 
+	private DoubleProperty maxCellWidth = new SimpleDoubleProperty(0);
+
 	public FilterPopUp(ListProperty<T> allItems, ListProperty<T> blacklist) {
 		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("FilterPopUp.fxml"));
 		fxmlLoader.setController(this);
@@ -72,7 +76,8 @@ public class FilterPopUp<T> extends PopupControl {
 	}
 
 	private void addSelectionProperties(List<? extends T> items) {
-		listView.setPrefHeight(listView.getPrefHeight() + (items.size() * listView.getFixedCellSize()));
+		maxCellWidth.set(0);
+		listView.setPrefHeight(7);
 		for (T item : items) {
 			SimpleBooleanProperty property = new SimpleBooleanProperty(true);
 			mapItemToSelectedProperty.put(item, property);
@@ -87,6 +92,7 @@ public class FilterPopUp<T> extends PopupControl {
 				}
 			});
 		}
+		listView.setPrefHeight(listView.getPrefHeight() + (items.size() * listView.getFixedCellSize()));
 	}
 
 	private void removeSelectionProperty(List<? extends T> items) {
@@ -112,8 +118,7 @@ public class FilterPopUp<T> extends PopupControl {
 	}
 
 	private void defineListView() {
-		listView.setPrefWidth(0);
-		listView.setPrefHeight(7);
+		listView.prefWidthProperty().bind(maxCellWidth);
 		listView.setCellFactory(param -> {
 			Callback<T, ObservableValue<Boolean>> callback = param1 -> {
 				SimpleBooleanProperty property = mapItemToSelectedProperty.get(param1);
@@ -121,9 +126,11 @@ public class FilterPopUp<T> extends PopupControl {
 			};
 			CheckBoxListCell<T> checkboxCell = new CheckBoxListCell<>(callback);
 			checkboxCell.widthProperty().addListener((ChangeListener<Number>) (observable, oldValue, newValue) -> {
-				double width = newValue.doubleValue() + listView.getInsets().getLeft()
-						+ listView.getInsets().getRight();
-				listView.setPrefWidth(Math.max(listView.getPrefWidth(), width));
+				double width = newValue.doubleValue() + listView.getInsets().getLeft() + listView.getInsets().getRight()
+						+ 25;
+				if (maxCellWidth.get() < width) {
+					maxCellWidth.set(width);
+				}
 			});
 
 			return checkboxCell;

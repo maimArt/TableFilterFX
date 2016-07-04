@@ -71,7 +71,7 @@ public class SampleFilteredTable extends Application {
 		List<Pojo> pojoList = new ArrayList<>();
 		for (int j = 0; j < 1; j++) {
 			for (int i = 0; i < 20; i++) {
-				pojoList.add(new Pojo("A" + i, "B0", i));
+				pojoList.add(new Pojo("ColumnAValue" + i, "B0", i));
 			}
 		}
 

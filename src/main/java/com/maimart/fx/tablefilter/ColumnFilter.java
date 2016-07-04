@@ -123,6 +123,9 @@ public class ColumnFilter<S, T> {
 				filterPopup.setAnchorLocation(AnchorLocation.CONTENT_TOP_LEFT);
 				xpos = screenBounds.getMinX();
 			}
+			// TODO hack to init with right width
+			filterPopup.show(header.getScene().getWindow());
+			filterPopup.hide();
 			filterPopup.show(header, xpos, screenBounds.getMaxY());
 		}
 		event.consume();
