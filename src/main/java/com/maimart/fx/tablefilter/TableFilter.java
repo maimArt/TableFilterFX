@@ -26,12 +26,12 @@ import javafx.scene.control.TableView;
  * @param <S>
  */
 public class TableFilter<S> {
-	
+
 	private final static Logger LOGGER = Logger.getLogger(TableFilter.class.getName());
 
 	private final TableView<S> tableView;
 	private final Map<Integer, List<ColumnFilter<S, ?>>> mapRowIndexToBlacklistingColumn = new HashMap<>();
-	private final ListProperty<S> unfilteredItems = new SimpleListProperty<S>(FXCollections.observableArrayList());	
+	private final ListProperty<S> unfilteredItems = new SimpleListProperty<S>(FXCollections.observableArrayList());
 
 	/**
 	 * Constructor that takes items of tableview for initialization
@@ -45,7 +45,8 @@ public class TableFilter<S> {
 			applyFilter();
 		});
 		// check if itemsProperty is bound when tableview is attached to scene
-		this.tableView.sceneProperty().addListener((ChangeListener<Scene>) (observable, oldValue, newValue) -> checkItemsProperty());
+		this.tableView.sceneProperty()
+				.addListener((ChangeListener<Scene>) (observable, oldValue, newValue) -> checkItemsProperty());
 	}
 
 	/**
@@ -58,17 +59,16 @@ public class TableFilter<S> {
 		this(tableView);
 		this.unfilteredItems.addAll(unfilteredItems);
 	}
-	
-	private void checkItemsProperty()
-	{
+
+	private void checkItemsProperty() {
 		boolean isBound = tableView.itemsProperty().isBound();
-		if(isBound)
-		{
-			throw new RuntimeException("itemsProperty of TableView must not be bound! Use unfilteredItemsProperty for binding.");
+		if (isBound) {
+			throw new RuntimeException(
+					"itemsProperty of TableView must not be bound! Use unfilteredItemsProperty for binding.");
 		}
 	}
 
-	public <T extends Comparable<T>> void filterColumn(TableColumn<S, T> column) {
+	public <T> void filterColumn(TableColumn<S, T> column) {
 		ColumnFilter<S, T> filteredColumn = new ColumnFilter<S, T>(this, column);
 		filteredColumn.blacklistedRowIndexesProperty()
 				.addListener((ListChangeListener<Integer>) changeevent -> onBlacklistedRowIndexesChanged(changeevent,
@@ -99,7 +99,7 @@ public class TableFilter<S> {
 		applyFilter();
 	}
 
-	void applyFilter() {		
+	void applyFilter() {
 		List<S> nextItems = new ArrayList<>();
 		for (int i = 0; i < unfilteredItems.size(); i++) {
 			if (mapRowIndexToBlacklistingColumn.get(i) == null) {

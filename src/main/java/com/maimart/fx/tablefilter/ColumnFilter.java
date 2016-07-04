@@ -2,6 +2,7 @@ package com.maimart.fx.tablefilter;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +28,7 @@ import javafx.scene.input.MouseEvent;
  * @param <S>
  * @param <T>
  */
-public class ColumnFilter<S, T extends Comparable<T>> {
+public class ColumnFilter<S, T> {
 
 	private final TableFilter<S> tableFilter;
 	private final TableColumn<S, T> column;
@@ -38,6 +39,7 @@ public class ColumnFilter<S, T extends Comparable<T>> {
 	private final ListProperty<Integer> blacklistedRowIndexes = new SimpleListProperty<>(
 			FXCollections.observableArrayList());
 	private Map<T, List<Integer>> mapItemToRowIndexes = new HashMap<>();
+	private final Comparator<T> comparator = (o1, o2) -> o1.toString().compareTo(o2.toString());;
 
 	public ColumnFilter(TableFilter<S> tablefilter, TableColumn<S, T> columnToFilter) {
 		super();
@@ -46,7 +48,7 @@ public class ColumnFilter<S, T extends Comparable<T>> {
 		EventHandler<CellEditEvent<S, T>> editCommitHandler = this.column.getOnEditCommit();
 		this.column.setOnEditCommit(event -> {
 			editCommitHandler.handle(event);
-			updateItems();			
+			updateItems();
 		});
 
 		// set custom header
@@ -124,7 +126,7 @@ public class ColumnFilter<S, T extends Comparable<T>> {
 			for (T existingValue : mergedValues) {
 				if (existingValue == null && value == null) {
 					alreadyExists = true;
-				} else if (existingValue != null && existingValue.compareTo(value) == 0) {
+				} else if (existingValue != null && comparator.compare(value, existingValue) == 0) {
 					alreadyExists = true;
 					break;
 				}
@@ -134,7 +136,7 @@ public class ColumnFilter<S, T extends Comparable<T>> {
 				mergedValues.add(value);
 			}
 		}
-		Collections.sort(mergedValues);
+		Collections.sort(mergedValues, comparator);
 		allItemsMerged.setAll(mergedValues);
 	}
 
