@@ -57,7 +57,6 @@ public class FilterPopUp<T> extends PopupControl {
 
 		this.blacklistItems = blacklist;
 		listView.itemsProperty().bind(allItems);
-		listView.setPrefWidth(0);
 		addSelectionProperties(allItems);
 		allItems.addListener((ListChangeListener<T>) c -> {
 			mapItemToSelectedProperty.clear();
@@ -73,6 +72,7 @@ public class FilterPopUp<T> extends PopupControl {
 	}
 
 	private void addSelectionProperties(List<? extends T> items) {
+		listView.setPrefHeight(listView.getPrefHeight() + (items.size() * listView.getFixedCellSize()));
 		for (T item : items) {
 			SimpleBooleanProperty property = new SimpleBooleanProperty(true);
 			mapItemToSelectedProperty.put(item, property);
@@ -112,6 +112,8 @@ public class FilterPopUp<T> extends PopupControl {
 	}
 
 	private void defineListView() {
+		listView.setPrefWidth(0);
+		listView.setPrefHeight(7);
 		listView.setCellFactory(param -> {
 			Callback<T, ObservableValue<Boolean>> callback = param1 -> {
 				SimpleBooleanProperty property = mapItemToSelectedProperty.get(param1);
@@ -123,6 +125,7 @@ public class FilterPopUp<T> extends PopupControl {
 						+ listView.getInsets().getRight();
 				listView.setPrefWidth(Math.max(listView.getPrefWidth(), width));
 			});
+
 			return checkboxCell;
 		});
 	}
