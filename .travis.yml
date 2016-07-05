@@ -6,7 +6,9 @@ language: java
 jdk:
   - oraclejdk8
   
-before_install: "git clone -b travis `git config --get remote.origin.url` target/travis"
+before_install: 
+  - "git clone -b travis `git config --get remote.origin.url` target/travis"
+  - gpg --import target/travis/private-key.gpg
 script: "mvn deploy --settings target/travis/settings.xml"
   
 env:
