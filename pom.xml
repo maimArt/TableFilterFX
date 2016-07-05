@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.maimart</groupId>
 	<artifactId>TableFilterFX</artifactId>
-	<version>0.1.2</version>
+	<version>0.1.2-SNAPSHOT</version>
 
 	<name>TableFilterFX</name>
 	<description>An extension for the JavaFX TableView that adds the possibility of applying a filter to the column headers</description>
@@ -121,9 +121,6 @@
 		<!-- profile for releases on sonatype OSS repository. -->
 		<profile>
 			<id>deploy-release</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
 			<build>
 				<plugins>
 					<plugin>
