@@ -5,6 +5,16 @@ An extension for the JavaFX TableView that adds the possibility of applying a fi
 
 ![screenshot1](https://cloud.githubusercontent.com/assets/20232625/16540990/0c2d9c2a-4078-11e6-87cc-98b96d7f017c.png)
 
+## Maven dependency
+
+```xml
+<dependency>
+        <groupId>com.github.maimart</groupId>
+        <artifactId>TableFilterFX</artifactId>
+        <version>>0.1.2</version>
+</dependency>
+```
+
 ## Implementation
 
 The implementation of the filter is quite easy. You wrap your TableView with the TableFilter
