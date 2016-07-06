@@ -11,7 +11,7 @@ An extension for the JavaFX TableView that adds the possibility of applying a fi
 <dependency>
         <groupId>com.github.maimart</groupId>
         <artifactId>TableFilterFX</artifactId>
-        <version>>0.1.2</version>
+        <version>0.1.2</version>
 </dependency>
 ```
 
