@@ -31,7 +31,7 @@ public class TableFilter<S> {
 
 	private final TableView<S> tableView;
 	private final Map<Integer, List<ColumnFilter<S, ?>>> mapRowIndexToBlacklistingColumn = new HashMap<>();
-	private final ListProperty<S> unfilteredItems = new SimpleListProperty<S>(FXCollections.observableArrayList());
+	private final ListProperty<S> unfilteredItems = new SimpleListProperty<>(FXCollections.observableArrayList());
 
 	/**
 	 * Constructor that takes items of tableview for initialization
@@ -69,7 +69,7 @@ public class TableFilter<S> {
 	}
 
 	public <T> void filterColumn(TableColumn<S, T> column) {
-		ColumnFilter<S, T> filteredColumn = new ColumnFilter<S, T>(this, column);
+		ColumnFilter<S, T> filteredColumn = new ColumnFilter<>(this, column);
 		filteredColumn.blacklistedRowIndexesProperty()
 				.addListener((ListChangeListener<Integer>) changeevent -> onBlacklistedRowIndexesChanged(changeevent,
 						filteredColumn));

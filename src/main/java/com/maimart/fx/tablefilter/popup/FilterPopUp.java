@@ -41,15 +41,15 @@ public class FilterPopUp<T> extends PopupControl {
 	@FXML
 	private ListView<T> listView;
 
-	private final Map<T, SimpleBooleanProperty> mapItemToSelectedProperty = new HashMap<>();
+	private final Map<T, SimpleBooleanProperty> mapCellValueToSelectedProperty = new HashMap<>();
 
-	private final ListProperty<T> blacklistItems;
+	private final ListProperty<T> blacklistedCellValues;
 
 	private boolean selectAllIsRunning = false;
 
 	private DoubleProperty maxCellWidth = new SimpleDoubleProperty(0);
 
-	public FilterPopUp(ListProperty<T> allItems, ListProperty<T> blacklist) {
+	public FilterPopUp(ListProperty<T> allCellValues, ListProperty<T> blacklistedCellValues) {
 		FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("FilterPopUp.fxml"));
 		fxmlLoader.setController(this);
 		fxmlLoader.setRoot(rootContent);
@@ -59,12 +59,13 @@ public class FilterPopUp<T> extends PopupControl {
 			throw new RuntimeException("Could not load fxml", e);
 		}
 
-		this.blacklistItems = blacklist;
-		listView.itemsProperty().bind(allItems);
-		addSelectionProperties(allItems);
-		allItems.addListener((ListChangeListener<T>) c -> {
-			mapItemToSelectedProperty.clear();
+		this.blacklistedCellValues = blacklistedCellValues;
+		listView.itemsProperty().bind(allCellValues);
+		addSelectionProperties(allCellValues);
+		allCellValues.addListener((ListChangeListener<T>) c -> {
+			mapCellValueToSelectedProperty.clear();
 			addSelectionProperties(c.getList());
+			chkBox_selectAll.selectedProperty().set(true);
 		});
 		initSelectAllCheckbox();
 	}
@@ -80,15 +81,15 @@ public class FilterPopUp<T> extends PopupControl {
 		listView.setPrefHeight(7);
 		for (T item : items) {
 			SimpleBooleanProperty property = new SimpleBooleanProperty(true);
-			mapItemToSelectedProperty.put(item, property);
+			mapCellValueToSelectedProperty.put(item, property);
 			property.addListener((ChangeListener<Boolean>) (observable, oldValue, newValue) -> {
 				if (!newValue) {
-					blacklistItems.add(item);
+					blacklistedCellValues.add(item);
 				} else {
-					blacklistItems.remove(item);
+					blacklistedCellValues.remove(item);
 				}
 				if (!selectAllIsRunning) {
-					chkBox_selectAll.setSelected(blacklistItems.size() == 0);
+					chkBox_selectAll.setSelected(blacklistedCellValues.size() == 0);
 				}
 			});
 		}
@@ -98,7 +99,7 @@ public class FilterPopUp<T> extends PopupControl {
 	private void removeSelectionProperty(List<? extends T> items) {
 		for (T item : items) {
 			// TODO remove listener before removing from map
-			mapItemToSelectedProperty.remove(item);
+			mapCellValueToSelectedProperty.remove(item);
 		}
 	}
 
@@ -110,7 +111,7 @@ public class FilterPopUp<T> extends PopupControl {
 			// TODO remove selectAllIsRunning hack to avoid setting wrong
 			// chkBox_selectAll value
 			selectAllIsRunning = true;
-			for (BooleanProperty bp : mapItemToSelectedProperty.values()) {
+			for (BooleanProperty bp : mapCellValueToSelectedProperty.values()) {
 				bp.set(chkBox_selectAll.isSelected());
 			}
 			selectAllIsRunning = false;
@@ -121,7 +122,7 @@ public class FilterPopUp<T> extends PopupControl {
 		listView.prefWidthProperty().bind(maxCellWidth);
 		listView.setCellFactory(param -> {
 			Callback<T, ObservableValue<Boolean>> callback = param1 -> {
-				SimpleBooleanProperty property = mapItemToSelectedProperty.get(param1);
+				SimpleBooleanProperty property = mapCellValueToSelectedProperty.get(param1);
 				return property;
 			};
 			CheckBoxListCell<T> checkboxCell = new CheckBoxListCell<>(callback);

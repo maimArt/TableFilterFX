@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.maimart</groupId>
 	<artifactId>TableFilterFX</artifactId>
-	<version>0.1.2-SNAPSHOT</version>
+	<version>1.0.0</version>
 
 	<name>TableFilterFX</name>
 	<description>An extension for the JavaFX TableView that adds the possibility of applying a filter to the column headers</description>

@@ -17,6 +17,7 @@ import javafx.collections.ListChangeListener.Change;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.PopupWindow.AnchorLocation;
@@ -35,11 +36,11 @@ public class ColumnFilter<S, T> {
 	private final TableColumn<S, T> column;
 	private final FilteredColumnHeader header;
 	private final FilterPopUp<T> filterPopup;
-	private final ListProperty<T> allItemsMerged = new SimpleListProperty<>(FXCollections.observableArrayList());
-	private final ListProperty<T> blacklistedItems = new SimpleListProperty<>(FXCollections.observableArrayList());
+	private final ListProperty<T> mergedCellValues = new SimpleListProperty<>(FXCollections.observableArrayList());
+	private final ListProperty<T> blacklistedCellValues = new SimpleListProperty<>(FXCollections.observableArrayList());
 	private final ListProperty<Integer> blacklistedRowIndexes = new SimpleListProperty<>(
 			FXCollections.observableArrayList());
-	private Map<T, List<Integer>> mapItemToRowIndexes = new HashMap<>();
+	private Map<T, List<Integer>> mapCellValuesToRowIndexes = new HashMap<>();
 	private final Comparator<T> comparator = (o1, o2) -> o1.toString().compareTo(o2.toString());;
 
 	public ColumnFilter(TableFilter<S> tablefilter, TableColumn<S, T> columnToFilter) {
@@ -49,18 +50,18 @@ public class ColumnFilter<S, T> {
 		EventHandler<CellEditEvent<S, T>> editCommitHandler = this.column.getOnEditCommit();
 		this.column.setOnEditCommit(event -> {
 			editCommitHandler.handle(event);
-			updateItems();
+			updateCellValues();
 		});
 
 		// set custom header
 		header = new FilteredColumnHeader(column);
 		header.prefWidthProperty().bind(column.widthProperty());
 		header.getFilterButton().setOnMouseClicked(this::onFilterButtonClicked);
-		header.isFilteredProperty().bind(blacklistedItems.emptyProperty().not());
+		header.isFilteredProperty().bind(blacklistedCellValues.emptyProperty().not());
 		column.setGraphic(header);
 
-		filterPopup = new FilterPopUp<T>(allItemsMerged, blacklistedItems);
-		blacklistedItems.addListener(this::onBlacklistedItemsChanged);
+		filterPopup = new FilterPopUp<>(mergedCellValues, blacklistedCellValues);
+		blacklistedCellValues.addListener(this::onBlacklistedCellValuesChanged);
 		initColumnFilter();
 	}
 
@@ -76,31 +77,35 @@ public class ColumnFilter<S, T> {
 				.bind(tableFilter.getTableView().heightProperty().multiply(0.5));
 		filterPopup.getRootContent().maxWidthProperty().bind(tableFilter.getTableView().widthProperty());
 		filterPopup.getRootContent().minWidthProperty().bind(column.widthProperty());
-		updateItems();
+		updateCellValues();
 		tableFilter.unfilteredItemsProperty().addListener((ListChangeListener<S>) changeevent -> {
-			updateItems();
+			blacklistedCellValues.removeListener(this::onBlacklistedCellValuesChanged);
+			blacklistedCellValues.clear();
+			blacklistedRowIndexes.clear();
+			updateCellValues();
+			blacklistedCellValues.addListener(this::onBlacklistedCellValuesChanged);
 		});
 	}
 
-	private void updateItems() {
-		mapIndexesToItems();
+	private void updateCellValues() {
+		mapIndexesToCellValues();
 		updateMergedCellValues();
-	}
+	}	
 
 	/**
 	 * Callback when blacklistitems changed
 	 * 
 	 * @param changeEvent
 	 */
-	private void onBlacklistedItemsChanged(Change<? extends T> changeEvent) {
+	private void onBlacklistedCellValuesChanged(Change<? extends T> changeEvent) {
 		List<Integer> addedIndexes = new ArrayList<>();
 		List<Integer> removedIndexes = new ArrayList<>();
 		while (changeEvent.next()) {
 			for (T addedItem : changeEvent.getAddedSubList()) {
-				addedIndexes.addAll(mapItemToRowIndexes.get(addedItem));
+				addedIndexes.addAll(mapCellValuesToRowIndexes.get(addedItem));
 			}
 			for (T removedItem : changeEvent.getRemoved()) {
-				removedIndexes.addAll(mapItemToRowIndexes.get(removedItem));
+				removedIndexes.addAll(mapCellValuesToRowIndexes.get(removedItem));
 			}
 		}
 		blacklistedRowIndexes.addAll(addedIndexes);
@@ -136,7 +141,7 @@ public class ColumnFilter<S, T> {
 	 */
 	private void updateMergedCellValues() {
 		List<T> mergedValues = new ArrayList<>();
-		for (T value : mapItemToRowIndexes.keySet()) {
+		for (T value : mapCellValuesToRowIndexes.keySet()) {
 			boolean alreadyExists = false;
 			for (T existingValue : mergedValues) {
 				if (existingValue == null && value == null) {
@@ -152,20 +157,21 @@ public class ColumnFilter<S, T> {
 			}
 		}
 		Collections.sort(mergedValues, comparator);
-		allItemsMerged.setAll(mergedValues);
+		mergedCellValues.setAll(mergedValues);
 	}
 
 	/**
 	 * map indexs of the items to the items
 	 */
-	private void mapIndexesToItems() {
-		mapItemToRowIndexes.clear();
+	private void mapIndexesToCellValues() {
+		mapCellValuesToRowIndexes.clear();
 		for (int i = 0; i < tableFilter.getUnfilteredItems().size(); i++) {
-			T item = column.getCellData(i);
-			List<Integer> indexes = mapItemToRowIndexes.get(item);
+			S item = tableFilter.getUnfilteredItems().get(i);
+			T cellValue = column.getCellValueFactory().call(new CellDataFeatures<>(tableFilter.getTableView(), column, item)).getValue();			
+			List<Integer> indexes = mapCellValuesToRowIndexes.get(cellValue);
 			if (indexes == null) {
 				indexes = new ArrayList<>();
-				mapItemToRowIndexes.put(item, indexes);
+				mapCellValuesToRowIndexes.put(cellValue, indexes);
 			}
 			indexes.add(i);
 		}
