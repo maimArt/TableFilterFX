@@ -3,7 +3,7 @@ An extension for the JavaFX TableView that adds the possibility of applying a fi
 
 [![Travis Build Status](https://travis-ci.org/maimArt/TableFilterFX.svg?branch=master)](https://travis-ci.org/maimArt/TableFilterFX)
 
-[![Maven Central](https://img.shields.io/maven-central/v/com.github.maimart/TableFilterFX.svg?maxAge=2592000)](http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22TableFilterFX%22)
+[![Maven Central](https://img.shields.io/maven-central/v/com.github.maimart/TableFilterFX.svg?maxAge=10000)](http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22TableFilterFX%22)
 
 [![Hex.pm](https://img.shields.io/hexpm/l/plug.svg?maxAge=2592000)]()
 
