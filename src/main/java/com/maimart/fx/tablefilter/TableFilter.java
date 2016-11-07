@@ -106,6 +106,7 @@ public class TableFilter<S> {
 				nextItems.add(unfilteredItems.get(i));
 			}
 		}
+		tableView.getSelectionModel().clearSelection();
 		tableView.getItems().setAll(nextItems);
 	}
 
